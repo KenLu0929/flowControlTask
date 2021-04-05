@@ -1,0 +1,219 @@
+definitions:
+  models.JsonFailedResult:
+    properties:
+      error:
+        items:
+          type: string
+        type: array
+      success:
+        example: false
+        type: boolean
+    type: object
+  models.JsonOKResult:
+    properties:
+      message:
+        items:
+          type: string
+        type: array
+      success:
+        example: true
+        type: boolean
+    type: object
+  models.JsonResult:
+    properties:
+      payload:
+        type: object
+      success:
+        example: true
+        type: boolean
+    type: object
+  post.Post:
+    properties:
+      content:
+        type: string
+      title:
+        type: string
+      user_id:
+        type: integer
+    type: object
+  user.User:
+    properties:
+      account:
+        type: string
+      birthday:
+        type: string
+      gender:
+        type: string
+      password:
+        type: string
+      username:
+        type: string
+    type: object
+info:
+  contact:
+    email: aaa710140505@gmail.com
+    name: KenLu
+    url: http://github.com/KenLu0929
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+paths:
+  /login/:
+    post:
+      consumes:
+      - application/json
+      description: login
+      operationId: login
+      parameters:
+      - description: account and password
+        in: body
+        name: input
+        required: true
+        schema:
+          allOf:
+          - type: object
+          - properties:
+              account:
+                type: string
+              password:
+                type: string
+            type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.JsonOKResult'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.JsonFailedResult'
+      summary: login
+      tags:
+      - Auth
+  /post/:
+    get:
+      description: get  user post by token
+      operationId: get-post
+      parameters:
+      - description: token (Bearer+' '+token)
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.JsonResult'
+            - properties:
+                payload:
+                  items:
+                    $ref: '#/definitions/post.Post'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.JsonFailedResult'
+      summary: get user post
+      tags:
+      - Post
+    post:
+      consumes:
+      - application/json
+      description: create new post by token
+      operationId: create-post
+      parameters:
+      - description: token (Bearer+' '+token)
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: post
+        in: body
+        name: data
+        required: true
+        schema:
+          allOf:
+          - type: object
+          - properties:
+              content:
+                type: string
+              title:
+                type: string
+            type: object
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.JsonOKResult'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.JsonFailedResult'
+      summary: create new post
+      tags:
+      - Post
+  /user/:
+    get:
+      description: get a user data by token
+      operationId: get-user
+      parameters:
+      - description: token (Bearer+' '+token)
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.JsonResult'
+            - properties:
+                payload:
+                  $ref: '#/definitions/user.User'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.JsonFailedResult'
+      summary: get user data
+      tags:
+      - User
+    post:
+      consumes:
+      - application/json
+      description: create new user
+      operationId: create-user
+      parameters:
+      - description: user data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/user.User'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.JsonOKResult'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.JsonFailedResult'
+      summary: create new user
+      tags:
+      - User
+swagger: "2.0"
